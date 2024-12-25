@@ -9224,6 +9224,12 @@ var sprites = {
   },
 };
 
+var leftClick = false,
+  leftStarted = false,
+  rightClick = false,
+  rightStarted = false,
+  dragging = false;
+
 var cam = {
   position: new PVector(0, 0),
   speed: 20,
@@ -12714,3 +12720,145 @@ Resources.createNew({
 MenuHandler.resetMenu();
 FogOfWar.setupFog();
 PathFinder.setup();
+
+draw = function () {
+  if (!Pixelator.hasFinishedRendering) {
+    Pixelator.renderAll();
+  } else {
+    background(75);
+
+    if (keys[keybinds.Up] || mouseY <= cam.edgeBuffer) {
+      cam.position.y += cam.speed;
+    }
+    if (keys[keybinds.Down] || mouseY >= height - cam.edgeBuffer) {
+      cam.position.y -= cam.speed;
+    }
+    if (keys[keybinds.Left] || mouseX <= cam.edgeBuffer) {
+      cam.position.x += cam.speed;
+    }
+    if (keys[keybinds.Right] || mouseX >= width - cam.edgeBuffer) {
+      cam.position.x -= cam.speed;
+    }
+
+    cam.position.x = constrain(
+      cam.position.x,
+      -(MAPS[0].mapSize - width) / 2,
+      (MAPS[0].mapSize - width) / 2
+    );
+    cam.position.y = constrain(
+      cam.position.y,
+      -(MAPS[0].mapSize - height) / 2,
+      (MAPS[0].mapSize - height) / 2
+    );
+
+    pushMatrix();
+    translate(cam.position.x, cam.position.y);
+
+    {
+      noStroke();
+      fill(100);
+      for (
+        var i =
+          roundTo(-cam.position.x, PathFinder.gridSize * 2) -
+          PathFinder.gridSize * 2;
+        i <
+        roundTo(-cam.position.x + width, PathFinder.gridSize * 2) +
+          PathFinder.gridSize * 2;
+        i += PathFinder.gridSize * 2
+      ) {
+        for (
+          var j =
+            roundTo(-cam.position.y, PathFinder.gridSize * 2) -
+            PathFinder.gridSize * 2;
+          j <
+          roundTo(-cam.position.y + height, PathFinder.gridSize * 2) +
+            PathFinder.gridSize * 2;
+          j += PathFinder.gridSize * 2
+        ) {
+          rect(i, j, PathFinder.gridSize, PathFinder.gridSize);
+          rect(
+            i + PathFinder.gridSize,
+            j + PathFinder.gridSize,
+            PathFinder.gridSize,
+            PathFinder.gridSize
+          );
+        }
+      }
+    } // Grid Background
+
+    SelectionHandler.displaySelection();
+    Resources.display();
+    Buildings.display();
+    Units.display();
+    Buildings.displayHealth();
+    Units.displayHealth();
+    // PathFinder.display();
+    FogOfWar.update();
+    FogOfWar.display();
+
+    popMatrix();
+
+    SelectionHandler.update();
+    MenuHandler.display();
+    Minimap.display();
+    CursorHandler.display();
+
+    fill(255);
+    textAlign(LEFT, CENTER);
+    textSize(15);
+    text("fps:" + round(this.__frameRate), 25, 25);
+
+    cursor("none");
+    if (
+      CursorHandler.cursorType !== "default" &&
+      !CursorHandler.isActionCursor
+    ) {
+      CursorHandler.setCursor("default", true);
+    }
+
+    leftClick = false;
+    rightClick = false;
+    for (var i = 0; i < keysUp.length; i++) {
+      keysUp[i] = false;
+    }
+  }
+};
+
+mousePressed = function () {
+  if (mouseButton === LEFT) {
+    leftStarted = true;
+  }
+  if (mouseButton === RIGHT) {
+    rightStarted = true;
+  }
+};
+mouseDragged = function () {
+  if (mouseButton === LEFT) {
+    if (!dragging) {
+      if (
+        !(mouseY > height - 125 || (mouseX <= 215 && mouseY >= height - 215))
+      ) {
+        SelectionHandler.startPosition = new PVector(mouseX, mouseY);
+        dragging = true;
+      }
+    }
+  }
+};
+mouseReleased = function () {
+  if (mouseButton === LEFT) {
+    leftClick = true;
+    leftStarted = false;
+    if (
+      !(mouseY > height - 125 || (mouseX <= 215 && mouseY >= height - 215)) ||
+      dragging
+    ) {
+      SelectionHandler.selectUnits(dragging);
+    }
+    dragging = false;
+    Minimap.isMovingMinimap = false;
+  }
+  if (mouseButton === RIGHT) {
+    rightClick = true;
+    rightStarted = false;
+  }
+};
