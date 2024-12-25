@@ -10202,8 +10202,8 @@ Units = (function () {
     if (!removeMouse && PathFinder.isReachable) {
       u.waypoints.push(
         new PVector(
-          (mouseX - cam.position.x) / PathFinder.gridSize,
-          (mouseY - cam.position.y) / PathFinder.gridSize
+          (mouse.x - cam.position.x) / PathFinder.gridSize,
+          (mouse.y - cam.position.y) / PathFinder.gridSize
         )
       );
     }
@@ -10603,17 +10603,17 @@ Buildings = (function () {
     var s = SelectionHandler.selectedUnits[0];
     for (var i = 0; i < s.menu.length; i++) {
       if (s.menu[i].title === "Rally") {
-        if (mouseX <= 205 && mouseY >= height - 205) {
+        if (mouse.x <= 205 && mouse.y >= height - 205) {
           s.rallyPoint = new PVector(
             map(
-              mouseX,
+              mouse.x,
               5,
               205,
               -(MAPS[0].mapSize - width) / 2,
               width + (MAPS[0].mapSize - width) / 2
             ),
             map(
-              mouseY,
+              mouse.y,
               height - 205,
               height - 5,
               -(MAPS[0].mapSize - height) / 2,
@@ -10622,8 +10622,8 @@ Buildings = (function () {
           );
         } else {
           s.rallyPoint = new PVector(
-            mouseX - cam.position.x,
-            mouseY - cam.position.y
+            mouse.x - cam.position.x,
+            mouse.y - cam.position.y
           );
         }
         s.rallyPointDist = dist(
@@ -10914,10 +10914,10 @@ Minimap = (function () {
   };
   Minimap.update = function () {
     if (
-      mouseX >= 5 &&
-      mouseX <= 205 &&
-      mouseY >= height - 205 &&
-      mouseY <= height - 5 &&
+      mouse.x >= 5 &&
+      mouse.x <= 205 &&
+      mouse.y >= height - 205 &&
+      mouse.y <= height - 5 &&
       leftStarted &&
       !dragging
     ) {
@@ -10925,14 +10925,14 @@ Minimap = (function () {
     }
     if (this.isMovingMinimap) {
       cam.position.x = map(
-        mouseX,
+        mouse.x,
         5 + 200 / (MAPS[0].mapSize / width) / 2,
         205 - 200 / (MAPS[0].mapSize / width) / 2,
         (MAPS[0].mapSize - width) / 2,
         -(MAPS[0].mapSize - width) / 2
       );
       cam.position.y = map(
-        mouseY,
+        mouse.y,
         height - 205 + 200 / (MAPS[0].mapSize / height) / 2,
         height - 5 - 200 / (MAPS[0].mapSize / height) / 2,
         (MAPS[0].mapSize - height) / 2,
@@ -11332,11 +11332,11 @@ PathFinder = (function () {
       );
       var endPos;
       var usedMap = false;
-      if (mouseX < 205 && mouseY >= height - 205) {
+      if (mouse.x < 205 && mouse.y >= height - 205) {
         endPos = new PVector(
           floor(
             map(
-              mouseX,
+              mouse.x,
               5,
               205,
               -(MAPS[0].mapSize - width) / 2,
@@ -11345,7 +11345,7 @@ PathFinder = (function () {
           ) + 1,
           floor(
             map(
-              mouseY,
+              mouse.y,
               height - 205,
               height - 5,
               -(MAPS[0].mapSize - height) / 2,
@@ -11357,11 +11357,11 @@ PathFinder = (function () {
       } else {
         endPos = new PVector(
           floor(
-            (mouseX - cam.position.x - PathFinder.gridSize / 2) /
+            (mouse.x - cam.position.x - PathFinder.gridSize / 2) /
               PathFinder.gridSize
           ) + 1,
           floor(
-            (mouseY - cam.position.y - PathFinder.gridSize / 2) /
+            (mouse.y - cam.position.y - PathFinder.gridSize / 2) /
               PathFinder.gridSize
           ) + 1
         );
@@ -11670,10 +11670,10 @@ MenuHandler = (function () {
         }
 
         if (
-          mouseX >= btnX - 25 &&
-          mouseX <= btnX + 25 &&
-          mouseY >= btnY - 25 &&
-          mouseY <= btnY + 25
+          mouse.x >= btnX - 25 &&
+          mouse.x <= btnX + 25 &&
+          mouse.y >= btnY - 25 &&
+          mouse.y <= btnY + 25
         ) {
           m.isHovering = true;
         } else {
@@ -11811,10 +11811,10 @@ MenuHandler = (function () {
         stroke(100, i === this.currentGroup ? 255 : 150);
 
         if (
-          mouseX >= 235 - 15 &&
-          mouseX <= 235 + 15 &&
-          mouseY >= height - 95 + 20 * i - 8 &&
-          mouseY <= height - 95 + 20 * i + 10
+          mouse.x >= 235 - 15 &&
+          mouse.x <= 235 + 15 &&
+          mouse.y >= height - 95 + 20 * i - 8 &&
+          mouse.y <= height - 95 + 20 * i + 10
         ) {
           stroke(150);
 
@@ -11869,15 +11869,15 @@ SelectionHandler = (function () {
           continue;
         }
 
-        if (mouseX > this.startPosition.x) {
-          if (mouseY > this.startPosition.y) {
+        if (mouse.x > this.startPosition.x) {
+          if (mouse.y > this.startPosition.y) {
             if (
               u.position.x + u.stats.size / 2 >=
                 this.startPosition.x - cam.position.x &&
-              u.position.x - u.stats.size / 2 <= mouseX - cam.position.x &&
+              u.position.x - u.stats.size / 2 <= mouse.x - cam.position.x &&
               u.position.y + u.stats.size / 2 >=
                 this.startPosition.y - cam.position.y &&
-              u.position.y - u.stats.size / 2 <= mouseY - cam.position.y
+              u.position.y - u.stats.size / 2 <= mouse.y - cam.position.y
             ) {
               if (u.stats.team === 1) {
                 myUnitHovered = true;
@@ -11902,8 +11902,8 @@ SelectionHandler = (function () {
             if (
               u.position.x + u.stats.size / 2 >=
                 this.startPosition.x - cam.position.x &&
-              u.position.x - u.stats.size / 2 <= mouseX - cam.position.x &&
-              u.position.y + u.stats.size / 2 >= mouseY - cam.position.y &&
+              u.position.x - u.stats.size / 2 <= mouse.x - cam.position.x &&
+              u.position.y + u.stats.size / 2 >= mouse.y - cam.position.y &&
               u.position.y - u.stats.size / 2 <=
                 this.startPosition.y - cam.position.y
             ) {
@@ -11928,14 +11928,14 @@ SelectionHandler = (function () {
             }
           }
         } else {
-          if (mouseY > this.startPosition.y) {
+          if (mouse.y > this.startPosition.y) {
             if (
-              u.position.x + u.stats.size / 2 >= mouseX - cam.position.x &&
+              u.position.x + u.stats.size / 2 >= mouse.x - cam.position.x &&
               u.position.x - u.stats.size / 2 <=
                 this.startPosition.x - cam.position.x &&
               u.position.y + u.stats.size / 2 >=
                 this.startPosition.y - cam.position.y &&
-              u.position.y - u.stats.size / 2 <= mouseY - cam.position.y
+              u.position.y - u.stats.size / 2 <= mouse.y - cam.position.y
             ) {
               if (u.stats.team === 1) {
                 myUnitHovered = true;
@@ -11958,10 +11958,10 @@ SelectionHandler = (function () {
             }
           } else {
             if (
-              u.position.x + u.stats.size / 2 >= mouseX - cam.position.x &&
+              u.position.x + u.stats.size / 2 >= mouse.x - cam.position.x &&
               u.position.x - u.stats.size / 2 <=
                 this.startPosition.x - cam.position.x &&
-              u.position.y + u.stats.size / 2 >= mouseY - cam.position.y &&
+              u.position.y + u.stats.size / 2 >= mouse.y - cam.position.y &&
               u.position.y - u.stats.size / 2 <=
                 this.startPosition.y - cam.position.y
             ) {
@@ -11999,15 +11999,15 @@ SelectionHandler = (function () {
             continue;
           }
 
-          if (mouseX > this.startPosition.x) {
-            if (mouseY > this.startPosition.y) {
+          if (mouse.x > this.startPosition.x) {
+            if (mouse.y > this.startPosition.y) {
               if (
                 b.position.x + b.stats.size / 2 >=
                   this.startPosition.x - cam.position.x &&
-                b.position.x - b.stats.size / 2 <= mouseX - cam.position.x &&
+                b.position.x - b.stats.size / 2 <= mouse.x - cam.position.x &&
                 b.position.y + b.stats.size / 2 >=
                   this.startPosition.y - cam.position.y &&
-                b.position.y - b.stats.size / 2 <= mouseY - cam.position.y
+                b.position.y - b.stats.size / 2 <= mouse.y - cam.position.y
               ) {
                 if (b.stats.team === 1) {
                   myUnitHovered = true;
@@ -12020,8 +12020,8 @@ SelectionHandler = (function () {
               if (
                 b.position.x + b.stats.size / 2 >=
                   this.startPosition.x - cam.position.x &&
-                b.position.x - b.stats.size / 2 <= mouseX - cam.position.x &&
-                b.position.y + b.stats.size / 2 >= mouseY - cam.position.y &&
+                b.position.x - b.stats.size / 2 <= mouse.x - cam.position.x &&
+                b.position.y + b.stats.size / 2 >= mouse.y - cam.position.y &&
                 b.position.y - b.stats.size / 2 <=
                   this.startPosition.y - cam.position.y
               ) {
@@ -12034,14 +12034,14 @@ SelectionHandler = (function () {
               }
             }
           } else {
-            if (mouseY > this.startPosition.y) {
+            if (mouse.y > this.startPosition.y) {
               if (
-                b.position.x + b.stats.size / 2 >= mouseX - cam.position.x &&
+                b.position.x + b.stats.size / 2 >= mouse.x - cam.position.x &&
                 b.position.x - b.stats.size / 2 <=
                   this.startPosition.x - cam.position.x &&
                 b.position.y + b.stats.size / 2 >=
                   this.startPosition.y - cam.position.y &&
-                b.position.y - b.stats.size / 2 <= mouseY - cam.position.y
+                b.position.y - b.stats.size / 2 <= mouse.y - cam.position.y
               ) {
                 if (b.stats.team === 1) {
                   myUnitHovered = true;
@@ -12052,10 +12052,10 @@ SelectionHandler = (function () {
               }
             } else {
               if (
-                b.position.x + b.stats.size / 2 >= mouseX - cam.position.x &&
+                b.position.x + b.stats.size / 2 >= mouse.x - cam.position.x &&
                 b.position.x - b.stats.size / 2 <=
                   this.startPosition.x - cam.position.x &&
-                b.position.y + b.stats.size / 2 >= mouseY - cam.position.y &&
+                b.position.y + b.stats.size / 2 >= mouse.y - cam.position.y &&
                 b.position.y - b.stats.size / 2 <=
                   this.startPosition.y - cam.position.y
               ) {
@@ -12091,8 +12091,8 @@ SelectionHandler = (function () {
 
         if (
           dist(
-            mouseX - cam.position.x,
-            mouseY - cam.position.y,
+            mouse.x - cam.position.x,
+            mouse.y - cam.position.y,
             u.position.x,
             u.position.y
           ) < u.stats.size
@@ -12100,14 +12100,14 @@ SelectionHandler = (function () {
           if (this.selectedUnits.length > 0) {
             if (
               dist(
-                mouseX - cam.position.x,
-                mouseY - cam.position.y,
+                mouse.x - cam.position.x,
+                mouse.y - cam.position.y,
                 u.position.x,
                 u.position.y
               ) <
               dist(
-                mouseX - cam.position.x,
-                mouseY - cam.position.y,
+                mouse.x - cam.position.x,
+                mouse.y - cam.position.y,
                 this.selectedUnits[0].position.x,
                 this.selectedUnits[0].position.y
               )
@@ -12126,8 +12126,8 @@ SelectionHandler = (function () {
 
           if (
             dist(
-              mouseX - cam.position.x,
-              mouseY - cam.position.y,
+              mouse.x - cam.position.x,
+              mouse.y - cam.position.y,
               b.position.x,
               b.position.y
             ) <
@@ -12136,14 +12136,14 @@ SelectionHandler = (function () {
             if (this.selectedUnits.length > 0) {
               if (
                 dist(
-                  mouseX - cam.position.x,
-                  mouseY - cam.position.y,
+                  mouse.x - cam.position.x,
+                  mouse.y - cam.position.y,
                   b.position.x,
                   b.position.y
                 ) <
                 dist(
-                  mouseX - cam.position.x,
-                  mouseY - cam.position.y,
+                  mouse.x - cam.position.x,
+                  mouse.y - cam.position.y,
                   this.selectedUnits[0].position.x,
                   this.selectedUnits[0].position.y
                 )
@@ -12191,12 +12191,12 @@ SelectionHandler = (function () {
         quad(
           this.startPosition.x,
           this.startPosition.y,
-          mouseX,
+          mouse.x,
           this.startPosition.y,
-          mouseX,
-          mouseY,
+          mouse.x,
+          mouse.y,
           this.startPosition.x,
-          mouseY
+          mouse.y
         );
         pushMatrix();
         translate(cam.position.x, cam.position.y);
@@ -12209,15 +12209,15 @@ SelectionHandler = (function () {
             continue;
           }
 
-          if (mouseX > this.startPosition.x) {
-            if (mouseY > this.startPosition.y) {
+          if (mouse.x > this.startPosition.x) {
+            if (mouse.y > this.startPosition.y) {
               if (
                 u.position.x + u.stats.size / 2 >=
                   this.startPosition.x - cam.position.x &&
-                u.position.x - u.stats.size / 2 <= mouseX - cam.position.x &&
+                u.position.x - u.stats.size / 2 <= mouse.x - cam.position.x &&
                 u.position.y + u.stats.size / 2 >=
                   this.startPosition.y - cam.position.y &&
-                u.position.y - u.stats.size / 2 <= mouseY - cam.position.y
+                u.position.y - u.stats.size / 2 <= mouse.y - cam.position.y
               ) {
                 if (u.stats.team === 1) {
                   myUnitHovered = true;
@@ -12232,8 +12232,8 @@ SelectionHandler = (function () {
               if (
                 u.position.x + u.stats.size / 2 >=
                   this.startPosition.x - cam.position.x &&
-                u.position.x - u.stats.size / 2 <= mouseX - cam.position.x &&
-                u.position.y + u.stats.size / 2 >= mouseY - cam.position.y &&
+                u.position.x - u.stats.size / 2 <= mouse.x - cam.position.x &&
+                u.position.y + u.stats.size / 2 >= mouse.y - cam.position.y &&
                 u.position.y - u.stats.size / 2 <=
                   this.startPosition.y - cam.position.y
               ) {
@@ -12248,14 +12248,14 @@ SelectionHandler = (function () {
               }
             }
           } else {
-            if (mouseY > this.startPosition.y) {
+            if (mouse.y > this.startPosition.y) {
               if (
-                u.position.x + u.stats.size / 2 >= mouseX - cam.position.x &&
+                u.position.x + u.stats.size / 2 >= mouse.x - cam.position.x &&
                 u.position.x - u.stats.size / 2 <=
                   this.startPosition.x - cam.position.x &&
                 u.position.y + u.stats.size / 2 >=
                   this.startPosition.y - cam.position.y &&
-                u.position.y - u.stats.size / 2 <= mouseY - cam.position.y
+                u.position.y - u.stats.size / 2 <= mouse.y - cam.position.y
               ) {
                 if (u.stats.team === 1) {
                   myUnitHovered = true;
@@ -12268,10 +12268,10 @@ SelectionHandler = (function () {
               }
             } else {
               if (
-                u.position.x + u.stats.size / 2 >= mouseX - cam.position.x &&
+                u.position.x + u.stats.size / 2 >= mouse.x - cam.position.x &&
                 u.position.x - u.stats.size / 2 <=
                   this.startPosition.x - cam.position.x &&
-                u.position.y + u.stats.size / 2 >= mouseY - cam.position.y &&
+                u.position.y + u.stats.size / 2 >= mouse.y - cam.position.y &&
                 u.position.y - u.stats.size / 2 <=
                   this.startPosition.y - cam.position.y
               ) {
@@ -12295,15 +12295,15 @@ SelectionHandler = (function () {
               continue;
             }
 
-            if (mouseX > this.startPosition.x) {
-              if (mouseY > this.startPosition.y) {
+            if (mouse.x > this.startPosition.x) {
+              if (mouse.y > this.startPosition.y) {
                 if (
                   b.position.x + b.stats.size / 2 >=
                     this.startPosition.x - cam.position.x &&
-                  b.position.x - b.stats.size / 2 <= mouseX - cam.position.x &&
+                  b.position.x - b.stats.size / 2 <= mouse.x - cam.position.x &&
                   b.position.y + b.stats.size / 2 >=
                     this.startPosition.y - cam.position.y &&
-                  b.position.y - b.stats.size / 2 <= mouseY - cam.position.y
+                  b.position.y - b.stats.size / 2 <= mouse.y - cam.position.y
                 ) {
                   if (b.stats.team === 1) {
                     myUnitHovered = true;
@@ -12322,8 +12322,8 @@ SelectionHandler = (function () {
                 if (
                   b.position.x + b.stats.size / 2 >=
                     this.startPosition.x - cam.position.x &&
-                  b.position.x - b.stats.size / 2 <= mouseX - cam.position.x &&
-                  b.position.y + b.stats.size / 2 >= mouseY - cam.position.y &&
+                  b.position.x - b.stats.size / 2 <= mouse.x - cam.position.x &&
+                  b.position.y + b.stats.size / 2 >= mouse.y - cam.position.y &&
                   b.position.y - b.stats.size / 2 <=
                     this.startPosition.y - cam.position.y
                 ) {
@@ -12342,14 +12342,14 @@ SelectionHandler = (function () {
                 }
               }
             } else {
-              if (mouseY > this.startPosition.y) {
+              if (mouse.y > this.startPosition.y) {
                 if (
-                  b.position.x + b.stats.size / 2 >= mouseX - cam.position.x &&
+                  b.position.x + b.stats.size / 2 >= mouse.x - cam.position.x &&
                   b.position.x - b.stats.size / 2 <=
                     this.startPosition.x - cam.position.x &&
                   b.position.y + b.stats.size / 2 >=
                     this.startPosition.y - cam.position.y &&
-                  b.position.y - b.stats.size / 2 <= mouseY - cam.position.y
+                  b.position.y - b.stats.size / 2 <= mouse.y - cam.position.y
                 ) {
                   if (b.stats.team === 1) {
                     myUnitHovered = true;
@@ -12366,10 +12366,10 @@ SelectionHandler = (function () {
                 }
               } else {
                 if (
-                  b.position.x + b.stats.size / 2 >= mouseX - cam.position.x &&
+                  b.position.x + b.stats.size / 2 >= mouse.x - cam.position.x &&
                   b.position.x - b.stats.size / 2 <=
                     this.startPosition.x - cam.position.x &&
-                  b.position.y + b.stats.size / 2 >= mouseY - cam.position.y &&
+                  b.position.y + b.stats.size / 2 >= mouse.y - cam.position.y &&
                   b.position.y - b.stats.size / 2 <=
                     this.startPosition.y - cam.position.y
                 ) {
@@ -12407,7 +12407,10 @@ SelectionHandler = (function () {
         popMatrix();
       }
     } else {
-      if (!(mouseX <= 205 && mouseY >= height - 205) && mouseY < height - 125) {
+      if (
+        !(mouse.x <= 205 && mouse.y >= height - 205) &&
+        mouse.y < height - 125
+      ) {
         pushMatrix();
         translate(cam.position.x, cam.position.y);
         var unitIsBeingHovered = false;
@@ -12420,8 +12423,8 @@ SelectionHandler = (function () {
 
           if (
             dist(
-              mouseX - cam.position.x,
-              mouseY - cam.position.y,
+              mouse.x - cam.position.x,
+              mouse.y - cam.position.y,
               u.position.x,
               u.position.y
             ) <
@@ -12454,10 +12457,10 @@ SelectionHandler = (function () {
             }
 
             if (
-              mouseX - cam.position.x >= b.position.x - b.stats.size / 2 &&
-              mouseX - cam.position.x <= b.position.x + b.stats.size / 2 &&
-              mouseY - cam.position.y >= b.position.y - b.stats.size / 2 &&
-              mouseY - cam.position.y <= b.position.y + b.stats.size / 2
+              mouse.x - cam.position.x >= b.position.x - b.stats.size / 2 &&
+              mouse.x - cam.position.x <= b.position.x + b.stats.size / 2 &&
+              mouse.y - cam.position.y >= b.position.y - b.stats.size / 2 &&
+              mouse.y - cam.position.y <= b.position.y + b.stats.size / 2
             ) {
               noFill();
               strokeWeight(1);
@@ -12517,7 +12520,7 @@ CursorHandler = (function () {
   };
   CursorHandler.display = function () {
     pushMatrix();
-    translate(mouseX, mouseY);
+    translate(mouse.x, mouse.y);
 
     switch (this.cursorType) {
       case "default":
@@ -12598,8 +12601,8 @@ CursorHandler = (function () {
           case "rally":
             if (
               !(
-                (mouseX > width - 170 && mouseY > height - 115) ||
-                (mouseX <= 205 && mouseY >= height - 205)
+                (mouse.x > width - 170 && mouse.y > height - 115) ||
+                (mouse.x <= 205 && mouse.y >= height - 205)
               )
             ) {
               Buildings.setRallyPoint();
@@ -12617,7 +12620,7 @@ CursorHandler = (function () {
     }
     if (rightClick) {
       if (!this.isActionCursor) {
-        if (!(mouseX >= 205 && mouseY >= height - 125)) {
+        if (!(mouse.x >= 205 && mouse.y >= height - 125)) {
           PathFinder.moveUnits();
           Buildings.setRallyPoint();
         }
