@@ -1,5 +1,9 @@
 println("beginning of the import");
 
+var anotherTestFunction = function () {
+  return "PLEASE WORK!";
+};
+
 rectMode(CENTER);
 var MAPS = [
   {
