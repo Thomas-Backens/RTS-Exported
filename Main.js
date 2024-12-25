@@ -1,3 +1,3 @@
 var anotherTestFunction = function () {
-  return "Test function. Updated again";
+  println("Test function. Updated again");
 };
