@@ -1,5 +1,5 @@
 var anotherTestFunction = function () {
-  return "PLEASE WORK! now?";
+  return "YES! How about now?";
 };
 println("Right after test function. Updated");
 
