@@ -1,3 +1,7 @@
+var testFunction = function () {
+  return "test again?";
+};
+
 rectMode(CENTER);
 var MAPS = [
   {
