@@ -9381,8 +9381,14 @@ var runProgram = function () {
     return Pixelator;
   })();
 
+  println("Anything?");
+  var started = false;
   draw = function () {
     if (!Pixelator.hasFinishedRendering) {
+      if (!started) {
+        println("Started rendering");
+        started = true;
+      }
       Pixelator.renderAll();
     } else {
       background(75);
