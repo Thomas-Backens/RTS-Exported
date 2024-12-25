@@ -12722,6 +12722,7 @@ FogOfWar.setupFog();
 PathFinder.setup();
 
 draw = function () {
+  println("???");
   if (!Pixelator.hasFinishedRendering) {
     Pixelator.renderAll();
   } else {
