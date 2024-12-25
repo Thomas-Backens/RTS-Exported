@@ -1,8 +1,7 @@
-println("beginning of the import");
-
 var anotherTestFunction = function () {
   return "PLEASE WORK!";
 };
+println("Right after test function");
 
 rectMode(CENTER);
 var MAPS = [
