@@ -1,3 +1,5 @@
+println("beginning of the import");
+
 rectMode(CENTER);
 var MAPS = [
   {
