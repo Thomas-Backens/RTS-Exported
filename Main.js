@@ -1,4 +1,5 @@
 var runProgram = function () {
+  println("Begin");
   rectMode(CENTER);
 
   var spriteSheets = {
@@ -9373,6 +9374,7 @@ var runProgram = function () {
         this.currentAnimation === 3
       ) {
         this.hasFinishedRendering = true;
+        println("Finished");
       }
     };
 
