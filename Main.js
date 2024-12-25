@@ -1,7 +1,7 @@
 var anotherTestFunction = function () {
-  return "PLEASE WORK!";
+  return "PLEASE WORK! now?";
 };
-println("Right after test function");
+println("Right after test function. Updated");
 
 rectMode(CENTER);
 var MAPS = [
