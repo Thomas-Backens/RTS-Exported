@@ -2,6 +2,7 @@ var anotherTestFunction = function () {
   println("Test function. Updated");
 };
 
+return;
 rectMode(CENTER);
 var MAPS = [
   {
