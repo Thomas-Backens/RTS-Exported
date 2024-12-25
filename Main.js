@@ -1,7 +1,6 @@
 var anotherTestFunction = function () {
-  return "YES! How about now?";
+  println("Test function. Updated");
 };
-println("Right after test function. Updated");
 
 rectMode(CENTER);
 var MAPS = [
