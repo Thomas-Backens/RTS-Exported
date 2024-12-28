@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>RTS Game</title>
+  </head>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    #mycanvas:focus {
+      outline: none;
+    }
+  </style>
+  <body>
+    <canvas id="mycanvas"></canvas>
+  </body>
+  <script src="https://cdn.jsdelivr.net/processing.js/1.4.8/processing.min.js"></script>
+  <script type="text/javascript" src="./Sprites.js"></script>
+  <script type="text/javascript" src="./classes/Pixelator.js"></script>
+  <script type="text/javascript" src="./classes/Units.js"></script>
+  <script type="text/javascript" src="./classes/Buildings.js"></script>
+  <script type="text/javascript" src="./classes/Resources.js"></script>
+  <script type="text/javascript" src="./classes/Minimap.js"></script>
+  <script type="text/javascript" src="./classes/PathFinder.js"></script>
+  <script type="text/javascript" src="./classes/FogOfWar.js"></script>
+  <script type="text/javascript" src="./classes/Indicators.js"></script>
+  <script type="text/javascript" src="./classes/MenuHandler.js"></script>
+  <script type="text/javascript" src="./classes/SelectionHandler.js"></script>
+  <script type="text/javascript" src="./classes/CursorHandler.js"></script>
+
+  <script>
+    var MAPS = [
+      {
+        mapSize: 2400,
+      },
+    ];
+    var keybinds = {
+      Up: 38,
+      Down: 40,
+      Left: 37,
+      Right: 39,
+      Move: 77,
+      Stop: 83,
+      Attack: 65,
+      Rally: 82,
+      Gather: 71,
+      Menu1: 66,
+      Training: {
+        Worker: 87,
+        Troop: 84,
+      },
+    };
+    var leftClick = false,
+      leftStarted = false,
+      rightClick = false,
+      rightStarted = false,
+      dragging = false;
+    var cam = {
+      position: new PVector(0, 0),
+      speed: 20,
+      edgeBuffer: 20,
+    };
+    var keys = [];
+    var keysUp = [];
+    var Pixelator,
+      sprites,
+      Units,
+      Buildings,
+      Resources,
+      Minimap,
+      PathFinder,
+      FogOfWar,
+      Indicators,
+      MenuHandler,
+      SelectionHandler,
+      CursorHandler;
+    var mouse = {
+      x: 50,
+      y: 50,
+    };
+
+    var roundTo = function (num, toRound) {
+      return Math.round(num / toRound) * toRound;
+    };
+    var distSquared = function (x1, y1, x2, y2) {
+      var dx = x2 - x1;
+      var dy = y2 - y1;
+      return dx * dx + dy * dy;
+    };
+
+    var programCode = function (processingInstance) {
+      with (processingInstance) {
+        size(window.innerWidth, window.innerHeight);
+        frameRate(60);
+        window.addEventListener("resize", function () {
+          size(window.innerWidth, window.innerHeight);
+        });
+        rectMode(CENTER);
+
+        keyPressed = function () {
+          keys[keyCode] = true;
+        };
+        keyReleased = function () {
+          keys[keyCode] = false;
+          keysUp[keyCode] = true;
+        };
+
+        Pixelator = Renderer(processingInstance);
+
+        var completeSetup = false;
+        draw = function () {
+          if (!Pixelator.hasFinishedRendering) {
+            Pixelator.renderAll();
+            Pixelator.displayProgressBar();
+          } else {
+            if (!completeSetup) {
+              sprites = Pixelator.sprites;
+
+              Units = UnitsManager(processingInstance);
+              Buildings = BuildingsManager(processingInstance);
+              Resources = ResourcesManager(processingInstance);
+              Minimap = MinimapManager(processingInstance);
+              PathFinder = PathFinderManager(processingInstance);
+              FogOfWar = FogOfWarManager(processingInstance);
+              Indicators = IndicatorsManager(processingInstance);
+              MenuHandler = MenuManager(processingInstance);
+              SelectionHandler = SelectionManager(processingInstance);
+              CursorHandler = CursorManager(processingInstance);
+
+              // #region Unit/Building/Resource Demo
+              Units.createNew({
+                x: -50,
+                y: 200,
+                unitType: "Troop",
+              });
+              // Units.createNew({
+              //   x: 100,
+              //   y: 100,
+              //   unitType: "Troop",
+              //   team: 2,
+              // });
+              // Units.createNew({
+              //   x: 700,
+              //   y: 300,
+              //   unitType: "Troop",
+              //   team: 2,
+              // });
+              Buildings.createNew({
+                x: 299,
+                y: 419,
+                size: 3,
+              });
+              Buildings.createNew({
+                x: 299,
+                y: 599,
+                size: 3,
+              });
+              Buildings.createNew({
+                x: 299,
+                y: 899,
+                size: 3,
+              });
+              Buildings.createNew({
+                x: 149,
+                y: 269,
+                size: 2,
+              });
+              Buildings.createNew({
+                x: 449,
+                y: 149,
+                size: 2,
+                team: 2,
+              });
+              Buildings.createNew({
+                x: 419,
+                y: 359,
+                size: 1,
+              });
+              Buildings.createNew({
+                x: 1019,
+                y: 119,
+                size: 3,
+                team: 2,
+              });
+              Buildings.createNew({
+                x: 1199,
+                y: 119,
+                size: 3,
+                team: 2,
+              });
+              Buildings.createNew({
+                x: -511,
+                y: 269,
+                size: 2,
+                team: 2,
+              });
+              Buildings.createNew({
+                x: -541,
+                y: 419,
+                size: 1,
+                team: 2,
+              });
+              Resources.createNew({
+                x: 149,
+                y: -89,
+              });
+              // #endregion
+
+              MenuHandler.resetMenu();
+              FogOfWar.setupFog();
+              PathFinder.setup();
+
+              completeSetup = true;
+            }
+            background(75);
+
+            if (keys[keybinds.Up] || mouse.y <= cam.edgeBuffer) {
+              cam.position.y += cam.speed;
+            }
+            if (keys[keybinds.Down] || mouse.y >= height - cam.edgeBuffer) {
+              cam.position.y -= cam.speed;
+            }
+            if (keys[keybinds.Left] || mouse.x <= cam.edgeBuffer) {
+              cam.position.x += cam.speed;
+            }
+            if (keys[keybinds.Right] || mouse.x >= width - cam.edgeBuffer) {
+              cam.position.x -= cam.speed;
+            }
+
+            cam.position.x = constrain(
+              cam.position.x,
+              -(MAPS[0].mapSize - width) / 2,
+              (MAPS[0].mapSize - width) / 2
+            );
+            cam.position.y = constrain(
+              cam.position.y,
+              -(MAPS[0].mapSize - height) / 2,
+              (MAPS[0].mapSize - height) / 2
+            );
+
+            pushMatrix();
+            translate(cam.position.x, cam.position.y);
+
+            {
+              noStroke();
+              fill(100);
+              for (
+                var i =
+                  roundTo(-cam.position.x, PathFinder.gridSize * 2) -
+                  PathFinder.gridSize * 2;
+                i <
+                roundTo(-cam.position.x + width, PathFinder.gridSize * 2) +
+                  PathFinder.gridSize * 2;
+                i += PathFinder.gridSize * 2
+              ) {
+                for (
+                  var j =
+                    roundTo(-cam.position.y, PathFinder.gridSize * 2) -
+                    PathFinder.gridSize * 2;
+                  j <
+                  roundTo(-cam.position.y + height, PathFinder.gridSize * 2) +
+                    PathFinder.gridSize * 2;
+                  j += PathFinder.gridSize * 2
+                ) {
+                  rect(i, j, PathFinder.gridSize, PathFinder.gridSize);
+                  rect(
+                    i + PathFinder.gridSize,
+                    j + PathFinder.gridSize,
+                    PathFinder.gridSize,
+                    PathFinder.gridSize
+                  );
+                }
+              }
+            } // Grid Background
+
+            SelectionHandler.displaySelection();
+            Resources.display();
+            Buildings.display();
+            Units.display();
+            Buildings.displayHealth();
+            Units.displayHealth();
+            // PathFinder.display();
+            FogOfWar.update();
+            FogOfWar.display();
+
+            popMatrix();
+
+            SelectionHandler.update();
+            MenuHandler.display();
+            Minimap.display();
+            CursorHandler.display();
+
+            fill(255);
+            textAlign(LEFT, CENTER);
+            textSize(15);
+            // text("fps:" + round(this.__frameRate), 25, 25);
+
+            cursor("none");
+            if (
+              CursorHandler.cursorType !== "default" &&
+              !CursorHandler.isActionCursor
+            ) {
+              CursorHandler.setCursor("default", true);
+            }
+
+            leftClick = false;
+            rightClick = false;
+            for (var i = 0; i < keysUp.length; i++) {
+              keysUp[i] = false;
+            }
+          }
+        };
+
+        mousePressed = function () {
+          if (mouseButton === LEFT) {
+            leftStarted = true;
+          }
+          if (mouseButton === RIGHT) {
+            rightStarted = true;
+          }
+        };
+        mouseDragged = function () {
+          if (mouseButton === LEFT) {
+            if (!dragging) {
+              if (
+                !(
+                  mouse.y > height - 125 ||
+                  (mouse.x <= 215 && mouse.y >= height - 215)
+                )
+              ) {
+                SelectionHandler.startPosition = new PVector(mouse.x, mouse.y);
+                dragging = true;
+              }
+            }
+          }
+        };
+        mouseReleased = function () {
+          if (mouseButton === LEFT) {
+            leftClick = true;
+            leftStarted = false;
+            if (
+              !(
+                mouse.y > height - 125 ||
+                (mouse.x <= 215 && mouse.y >= height - 215)
+              ) ||
+              dragging
+            ) {
+              SelectionHandler.selectUnits(dragging);
+            }
+            dragging = false;
+            Minimap.isMovingMinimap = false;
+          }
+          if (mouseButton === RIGHT) {
+            rightClick = true;
+            rightStarted = false;
+          }
+        };
+      }
+
+      // Handle pointer lock changes
+      canvas.addEventListener("click", async () => {
+        if (!document.pointerLockElement) {
+          try {
+            await canvas.requestPointerLock({
+              unadjustedMovement: true,
+            });
+          } catch (error) {
+            if (error.name === "NotSupportedError") {
+              // Some platforms may not support unadjusted movement.
+              await canvas.requestPointerLock();
+            } else {
+              throw error;
+            }
+          }
+        }
+      });
+      document.addEventListener("pointerlockchange", lockChangeAlert, false);
+      function lockChangeAlert() {
+        if (document.pointerLockElement === canvas) {
+          console.log("The pointer lock status is now locked");
+          document.addEventListener("mousemove", updatePosition, false);
+        } else {
+          console.log("The pointer lock status is now unlocked");
+          document.removeEventListener("mousemove", updatePosition, false);
+        }
+      }
+      function updatePosition(e) {
+        function updateCoord(pos, delta, max) {
+          pos += delta;
+          if (pos < 0) {
+            pos = 0;
+          } else if (pos > max) {
+            pos = max;
+          }
+          return pos;
+        }
+
+        mouse.x = updateCoord(mouse.x, e.movementX, canvas.width);
+        mouse.y = updateCoord(mouse.y, e.movementY, canvas.height);
+      }
+    };
+
+    var canvas = document.getElementById("mycanvas");
+    var processingInstance = new Processing(canvas, programCode);
+  </script>
+</html>
